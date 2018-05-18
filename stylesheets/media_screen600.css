@@ -1,0 +1,11 @@
+ /* */
+ @media only screen and (max-width: 600px) {
+	.floating-box { width: 100%;}
+	.column {width: 100%;}
+	.column_r { width: 100%;}
+	.column_home {width: 100%; }
+	.instructions  {width: 100%; }
+	.column_menu {width: auto; float:none}
+	.floater{width: 100%;float:none}
+	.equal_med { width: auto; color:#444444;height:3em}
+}

@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="description" content="Stats-Tec Cryptocurrency market statistics">
+<meta name="keywords" content="blockchain, statistics, Bitcoin, top 10, top 100, cryptocurrency, Stats-Tec, PCA, cluster, k-means">
+<meta name="author" content="Stats-Tec inc. Blockchain">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta content="text/html;charset=utf-8" http-equiv="Content-Type">
+<meta content="utf-8" http-equiv="encoding">
+  <! version 3 2017-07-08 21:30>
+  <title>Stats-Tec Blockchain graphs and statistics</title>
+  <link rel="stylesheet" type="text/css" href="stylesheets/StylesheetU3.css">
+  <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+  <script  src="JavaScript_files/jquery-3.2.1.js" type="text/javascript"> </script>
+  <script  src="JavaScript_files/myJavaScript-all.js" type="text/javascript"> </script>
+  <script  src="JavaScript_files/statspage-js.js" type="text/javascript"> </script>
+  <script src="http://www.numericjs.com/lib/numeric-1.2.6.js"></script>
+    <script  src="JavaScript_files/kmeans.js" type="text/javascript"> </script>
+</head>
+<body class="style_plain2">
+	<div class="header" >
+		<h1> Stats-Tec <span id="span1"> inc. </span>Blockchain </h1>
+		<span id="return"> <a href="page_homehtml.html">Home</a></span>
+	</div>
+	<br>
+	<h2> Graphs and Stats</h2>
+	<p><b> (Top 100 coins from <a href="https://coinmarketcap.com/">CoinMarketCap</a>)</b></p>
+	<div class="header" >
+		<br>
+		<form id="coinCheckList" style="width:100%;">
+		</form>
+	</div>
+	<br>
+	<p id="floating_box" > <b> Donate: BTC </b> 16BghZgtoh9hmifLskv1Jtec46abQZ1Kp ,  <b> FRC </b>  1KQ4z7mRxLPhPAzcZTnUPCPHLC67B8h2Hr</P>
+	<button type="button" onclick="graphIt()" style="width:10%;height:60px;">Graph it!</button><br>
+	<br>
+	<div id="firstgraph" style="width:100%;height:40em;"></div>
+	<br>
+	<div id="firstgraphbar" style="width:100%;height:40em;"></div>
+	<br>
+	<h2> PCA Analysis</h2><br>
+	<div class="container">
+		<p >It is well known in crypto currency markets that when Bitcoin moves up or down the rest of the market follows, mostly.
+		Principal component analysis (PCA) can help determine how much of the market movement is correlated. Some groups of coins such as Ethereum, 
+		NEO, and at times DASH and Monero have moved differently from Bitcoin. These different groups can be identified (to some degree)
+		in the eigen vectors of the PCA. For each eigen vector, the amplitude coefficients show its dominance in the market at any given time. 
+		This analysis uses the covariance matrix of the normalized dataset (as plotted above). <span style="color:brown"> Please wait for the data to load, execute the analysis and view the results below.</span></p>
+	</div>
+	<div >
+		<div class="floater" >
+			<br>
+			<button type="button" onclick="PCAGo()" style="height:7em;">PCA analysis Go!</button>
+		</div>
+		<div class="floater" >
+			<br>
+			<p ><b>number of coins for PCA : </b><span id="ncoins" style="color:brown"></span></p>
+			<p ><b>number of days of data : </b><span id="ndays"></span></p>
+		</div>
+		<div class="floater" >
+			<br>
+			<p ><b>start date : </b><span id="sdate"></span></p>
+			<p ><b>end date : </b><span id="edate"></span></p>
+		</div>
+	</div>
+	<div class="container"><br> <br><br> <br><br><br></div>
+	<div id="PCAgraph" style="width:100%;height:30%;"></div>
+	<div class="container">
+	<br>
+		<h2>Results </h2>
+		<p >Here we keep a running record of conclusions drawn for the data. Since crypo markets change dramatically, and only a short 3 month data window is followed here, comments are periodically moved from here 
+		   the technical blog at  <a href="http://www.statstec.ca">statstec.ca</a>. In PCA analysis, a centred version of the normalized data set can be rebuilt by multiplying the eigenvectors (EG listed in Appendix) by 
+		   their amplitude scores (the curves 'a' above). Note that a negative EG1 coefficient multiplied by a negative amplitude score indicates price increase. In the plot above, the zero value of the amplitude curves represents a mean (sort of).
+		   From the results, typically over 90% of the information can be reconstructed with 4 eigenvectors. Also, EG1 represents typically about 80% of variations in the market. The coefficients of EG1 are all negative for every coin, except for Tether. 
+		   It represents correlated market movements and perhaps indirectly money in the market.EG2 and E3 typically represents around 10% and 5% of variations in market, respectively. Here coins like NEM, and Binance, or Ethereum, NEO, and Stellar, are negatively correlated to Bitcoin and other coins. 
+			Amplitude curves 'a2' and 'a3' represent a certain proportion of money that moves toward or away from these coins to the others. (similar analysis applies to EG4). In the 4 cluster results below, positive value are daily positive price change (ie slope of price curve).
+			</p>
+		   
+
+		<p >(2018-04-13) Results discussion - </p>
+		<ul>
+		<li>From both the 6 months and 3 month analysis, the amplitudes for EG1, curve 'a1', appears to have levelled off; ie, the market has arrived at where it was headed.</li>
+		<li>From the 4 cluster results below, it appears that the bottom peaks are steadily reducing; ie, the number and magnitude of price drops.</li>
+		<li>This suggest a bull period coming. Price drops are being replaced by price flats and price swings by flat to jump.</li>
+		<li>Also from the clusters below, there appears to be a long cycle and short cycle in price movement. The short cycle has about 4 days positive and 4 days negative. The long cycle is defined by the lower dips within which there can be one or two smaller dips.</li>
+		</ul>
+		<p >(2018-04-20) Results discussion - </p>
+		<ul>
+		<li>Last time the 'a1' curve was at the same value was on March 6. Then, Bitcoin was $10800. Currently its at $8900. So its lost 20% to alts (The movements in curves 'a2' and 'a3' etc).</li>
+		<li>The momentum has swung back in favour of BTC a bit today, explaining somewhat the sudden surge.</li>
+		</ul>
+		<p >(2018-04-25) Results discussion - </p>
+		<ul>
+		<li>A new wave in crypto markets: BTC, ETH, XRP, LTC, now old and non-shiny. Money moving into EOS, Cardano, Binance, NEM, Loopring etc. See EG2 (vector 2) in appendix.</li>
+		<li>Possible ending of 'long cycle' today. Market bullishness and volatility may be giving away to a small correction</li>
+		</ul>
+		<p >(2018-05-17) Results discussion - </p>
+		<ul>
+		<li>Market is retreating but appears to leveling off. Bitcoin has regained ground relative to alt coins.</li>
+		<li>Possible 'long cycle' negative peak passed. Market bullishness probably to return</li>
+		</ul>
+	</div>
+	<br>
+	<h2> Cluster Analysis</h2>
+	<div class="container">
+		<p >Cluster analysis seeks to identify groups in the dataset: data points that are close to each other and far from other groups.
+		The top 100 crypto-currencies do not form well defined different groups. Rather they form one big group with fuzzy edges and outliers. 
+		To try to form meaningful groups we have done 2 things: (1) the 3-day average price change is used as the clustering variable; 
+		and,(2) PCA analysis is preformed on this data set to reduce the number or variables for clustering. Here, the k-means clustering algorithm
+		is used to make 4 clusters based on the first 4 eigenvectors. For interesting results, the 3-day average price change is presented with the 3-day average volume.
+		<span style="color:brown"> Please try a few iterations to find interesting clusters. 
+		Pumping coins appear in small outlier cluster of 2 to 4 coins and show an up-tick at the end of the time series. </span> 
+		The cluster assignments can be found below in the appendix. Go back to the first chart to plot individual cluster members.</p>
+	</div>
+	<div >
+		<br>
+		<button type="button" onclick="ClusterGo()" style="height:7em;">Cluster analysis Go!</button>
+		<br>
+	</div>
+	<canvas id="canvas" width="1000" height="1000" style="display:none" ></canvas>
+	<br><div id="PCAgraph2" style="width:100%;height:30em;"></div>	
+	<br><div id="PCAgraph2bar" style="width:100%;height:30em;"></div>	
+	<h2 id="Appendix">Appendix</h2>
+	<div id="PCAgraph3" style="width:100%;height:30em;"></div>	
+	<div id="Eigenvectors" class="floating-box"></div>
+	<div id="assignments" class="floating-box"></div>
+	<div id="Scores"></div>
+	<script> 
+		// public variables
+		var PCAvar=[];
+		var PCAname=[];
+		var PCAxdata=[];
+		var Avdata=[];
+		var coinlist =[];
+		var data=[];
+		var PCAgrad=[];
+		var noTraces =0;
+		var today= new Date();
+		var ddate= GetFormattedDateAPI(today);
+		var sdate =GetFormattedDateAPI(today-8522344225);
+		document.getElementById("sdate").innerHTML=GetFormattedDate(today-8522344225);
+		document.getElementById("edate").innerHTML=GetFormattedDate(today);
+		// 
+		//
+		$(document).ready(function() {
+		///
+			loadCheckBox();
+			console.log(sdate);
+			console.log(ddate);
+			///
+			loadOpeningGraph();
+		});
+		
+		//
+	</script>
+</body>
+</html>
