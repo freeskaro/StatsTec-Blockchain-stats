@@ -24,7 +24,7 @@
 	</div>
 	<br>
 	<h2> Graphs and Stats</h2>
-	<p><b> (Top 100 coins from <a href="https://coinmarketcap.com/">CoinMarketCap</a>)</b></p>
+	<p><b> (Top 50 coins from <a href="https://coinmarketcap.com/">CoinMarketCap</a>)</b></p>
 	<div class="header" >
 		<br>
 		<form id="coinCheckList" style="width:100%;">
@@ -98,15 +98,23 @@
 		<li>Market is retreating but appears to leveling off. Bitcoin has regained ground relative to alt coins.</li>
 		<li>Possible 'long cycle' negative peak passed. Market bullishness probably to return</li>
 		</ul>
+		<p >(2018-06-29) Results discussion - </p>
+		<ul>
+		<li>So my analysis is not so different from technical analysis except that it can look at numerous coins at once. Also, here, I'm looking at price change of clusters of top 48 coins. 
+		Notice the bottoms of the negative spikes becoming higher.</li>
+		<li>The same pattern appeared before the April price rise and to a lesser extent the small May bump. The reverse happens too.</li>
+		<li>In the cumulative sense, however, the overall trend is down. So their are some signs for a bullish market period, but its not overtly clear.</li>
+		</ul>
 	</div>
 	<br>
 	<h2> Cluster Analysis</h2>
 	<div class="container">
 		<p >Cluster analysis seeks to identify groups in the dataset: data points that are close to each other and far from other groups.
-		The top 100 crypto-currencies do not form well defined different groups. Rather they form one big group with fuzzy edges and outliers. 
-		To try to form meaningful groups we have done 2 things: (1) the 3-day average price change is used as the clustering variable; 
-		and,(2) PCA analysis is preformed on this data set to reduce the number or variables for clustering. Here, the k-means clustering algorithm
-		is used to make 4 clusters based on the first 4 eigenvectors. For interesting results, the 3-day average price change is presented with the 3-day average volume.
+		The top 50 crypto-currencies do not form well defined different groups. Rather they form one big group with fuzzy edges and outliers. 
+		To try to form meaningful groups we have done 2 things: (1) the 3-day average price change and average volume change are used as the clustering variable; 
+		and,(2) PCA analysis is preformed on this data set to reduce the number or variables for clustering. Here, a hybrid k-means clustering with seeds found using Gaussian Mixture Model algorithm 
+		(just a fun hack because because there is a lack of good Javascript clustering libraries)
+		is used to make 4 clusters based on the first 4 eigenvectors. For interesting results, the 3-day average price change is presented with the 3-day average volume change.
 		<span style="color:brown"> Please try a few iterations to find interesting clusters. 
 		Pumping coins appear in small outlier cluster of 2 to 4 coins and show an up-tick at the end of the time series. </span> 
 		The cluster assignments can be found below in the appendix. Go back to the first chart to plot individual cluster members.</p>
