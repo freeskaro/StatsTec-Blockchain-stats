@@ -71,6 +71,7 @@ function PCAGo() {
 function ClusterGo() {
 	//
 	var PCAresults=PCAanalysis(PCAgrad,PCAname,PCAxdata);
+	console.log("size PCAresults"+PCAresults.E.length);
 	var xdates=PCAxdata;
 		// plot scores
 	var rtrace=[];
@@ -79,9 +80,11 @@ function ClusterGo() {
  // data for clustering
  	var ne = PCAresults.E.length;
 	var kcount=0;
-	for (var i=0;i<ne;i=i+1) {//i=i+2 for two variables
-		// TWO variables: var row=[PCAresults.E[0][i],PCAresults.E[0][i+1],PCAresults.E[1][i],PCAresults.E[1][i+1],PCAresults.E[2][i],PCAresults.E[2][i+1],PCAresults.E[3][i],PCAresults.E[3][i+1]];
-		data[kcount]=[PCAresults.E[0][i],PCAresults.E[1][i],PCAresults.E[2][i],PCAresults.E[3][i],PCAresults.E[4][i]];
+	for (var i=0;i<ne;i=i+2) {//i=i+2 for two variables; i=i+1 for one variables
+		// TWO variables: var row=
+		 var row=[PCAresults.E[0][i],PCAresults.E[0][i+1],PCAresults.E[1][i],PCAresults.E[1][i+1],PCAresults.E[2][i],PCAresults.E[2][i+1],PCAresults.E[3][i],PCAresults.E[3][i+1]];
+		 data[kcount]=row;
+		//data[kcount]=[PCAresults.E[0][i],PCAresults.E[1][i],PCAresults.E[2][i],PCAresults.E[3][i],PCAresults.E[4][i]];
 		kcount++;
 	}
 	//
@@ -116,10 +119,10 @@ function ClusterGo() {
 		for (var k=0;k<kcount;k++) {
 			if (kmeans.assignments[k]==j){
 				for (var i=0;i<nl;i++) {
-					//iclusr[i]=iclusr[i]+PCAgrad[2*k][i]/ccount[j]; for TWO variables
-					//vclusr[i]=vclusr[i]+Avdatagrad[2*k+1][i]/ccount[j];		
-					iclusr[i]=iclusr[i]+PCAgrad[k][i]/ccount[j]; // prices to cluster
-					vclusr[i]=vclusr[i]+Avdata[k][i]/ccount[j];		// volumes	to cluster
+					iclusr[i]=iclusr[i]+PCAgrad[2*k][i]/ccount[j]; //for TWO variables
+					vclusr[i]=vclusr[i]+PCAgrad[2*k+1][i]/ccount[j];		
+					//iclusr[i]=iclusr[i]+PCAgrad[k][i]/ccount[j]; // prices to cluster
+					//vclusr[i]=vclusr[i]+Avdata[k][i]/ccount[j];		// volumes	to cluster
 				}}}
 		clusresults[j]=iclusr;
 		vclusresults[j]=vclusr;
@@ -176,7 +179,7 @@ function ClusterGo() {
 		PCAgraph = document.getElementById('PCAgraph2bar');
 		var trace = {x: xdata, y: ydata, type: 'bar', name: ("cluster "+(k+1)+' ('+ccount[k]+')'), line: {shape: 'hv'}, type: 'scatter'};
 		ddata=[trace];
-		var llayout = {title:'Time vs. Cluster 3-day avg. Volume change', plot_bgcolor: '#DCDCDC' ,legend: {"orientation": "h",xanchor:'center',x:0.5,y:-0.2},xaxis: {title: 'Date'}, yaxis: {title: 'volume / mean'}};
+		var llayout = {title:'Time vs. Cluster 3-day avg. Volume change', plot_bgcolor: '#DCDCDC' ,legend: {"orientation": "h",xanchor:'center',x:0.5,y:-0.2},xaxis: {title: 'Date'}, yaxis: {title: '0.1 x Daily Change volume / mean'}};
 		//console.log("plotting ", name);
 		Plotly.plot(PCAgraph, ddata, llayout);
 	};	
@@ -199,7 +202,7 @@ function ClusterGo() {
 		PCAgraph = document.getElementById('PCAgraph3');
 		var trace = {x: xdata,   y: ydata,   mode: 'lines',  name: (" a"+(k+1)+' var '+pvar.toFixed(0)+'%')};
 		ddata=[trace];
-		var llayout = {   title:'1-4 PCA loads: Time vs. Amplitude of 3-day Avg Daily Change', plot_bgcolor: '#DCDCDC' ,legend: {"orientation": "h",xanchor:'center',x:0.5,y:-0.2},xaxis: {title: 'Date'}, yaxis: {title: 'Standardized Amplitudes'}};
+		var llayout = {   title:'1-4 PCA loads: Time vs. Amplitude ', plot_bgcolor: '#DCDCDC' ,legend: {"orientation": "h",xanchor:'center',x:0.5,y:-0.2},xaxis: {title: 'Date'}, yaxis: {title: 'Standardized Amplitudes'}};
 		//console.log("plotting ", name);
 		Plotly.plot(PCAgraph, ddata, llayout);
 	};	
@@ -217,7 +220,7 @@ function readCheckBox() {
 	var nameseta =[];
   // Get the checkbox
 	var count=0;
-	for (i=0; i<100; i++){
+	for (i=0; i<50; i++){
 	  var checkBox = document.getElementById("coin"+i);
 	  // If the checkbox is checked, display the output text
 	  if (checkBox.checked == true){
@@ -427,8 +430,8 @@ function formWriteEig2 (labels,E,ass,k,id){
 	tr.appendChild(td);
 	var nlabel=0;
 	// write out results,
-	for (var i=0; i<E.length; i=i+1) {// i=i+2 for two variables
-		var textOutLabel = (labels[nlabel] + " (v)");
+	for (var i=0; i<E.length; i=i+2) {// i=i+2 for two variables
+		var textOutLabel = (labels[nlabel]);
 		//price row
 		var tr = document.createElement('tr');
 		tbdy.appendChild(tr);
@@ -445,19 +448,19 @@ function formWriteEig2 (labels,E,ass,k,id){
 		var td = document.createElement('td');
 		td.appendChild(document.createTextNode(textOutLabel));
 		tr.appendChild(td);
-		//volume row
-		//var textOutLabel = (labels[nlabel] + "v");
-		//var tr = document.createElement('tr');
-		//tbdy.appendChild(tr);
-		//var td = document.createElement('td');
-		//td.appendChild(document.createTextNode(textOutLabel));
-		//tr.appendChild(td);
-		//for (var j=0; j<k; j++){
-		//	var textOutCoef = E[i+1][j];		
-		//	var td = document.createElement('td');
-		//	td.appendChild(document.createTextNode(textOutCoef.toFixed(3)));		
-		//	tr.appendChild(td);
-		//}
+		//volume row whe 2 variables
+		var textOutLabel = (labels[nlabel] + " v");
+		var tr = document.createElement('tr');
+		tbdy.appendChild(tr);
+		var td = document.createElement('td');
+		td.appendChild(document.createTextNode(textOutLabel));
+		tr.appendChild(td);
+		for (var j=0; j<k; j++){
+			var textOutCoef = E[i+1][j];		
+			var td = document.createElement('td');
+			td.appendChild(document.createTextNode(textOutCoef.toFixed(3)));		
+			tr.appendChild(td);
+		}
 		//var textOutLabel = ass[nlabel]+1;
 		//var td = document.createElement('td');
 		//td.appendChild(document.createTextNode(textOutLabel));
@@ -675,7 +678,7 @@ function loadCheckBox(){
 	*/
 	var ccount=0;
 	var ccount2=0;
- 	$.getJSON('http://www.whateverorigin.org/get?url=' + encodeURIComponent("https://api.coinmarketcap.com/v1/ticker/?limit=100") + '&callback=?', function(data,status){
+ 	$.getJSON('http://www.whateverorigin.org/get?url=' + encodeURIComponent("https://api.coinmarketcap.com/v1/ticker/?limit=50") + '&callback=?', function(data,status){
 	if (status != "success"){alert("We are sorry. External data is not available");} 
 	coinsNo=data.contents.length;
 	//
@@ -754,20 +757,20 @@ function loadCheckBox(){
 					//ydatan[i]=(ydata[i+1]-ydata[i])/yave;
 					//ydatan[i-2]=((ydata[i-1]-ydata[i-2])+(ydata[i]-ydata[i-1])+(ydata[i+1]-ydata[i])+(ydata[i+2]-ydata[i+1]))/(4*yave);
 					graddata[i-1]=((ydata[i]-ydata[i-1])+(ydata[i+1]-ydata[i])+(ydata[i+2]-ydata[i+1]))/(3*yave); // 3 day average price change
-					vraddata[i-1]=((vdata[i-1]+vdata[i]+vdata[i+1]))/(3*vave);		// 		3 day average volume	
+					vraddata[i-1]=((vdata[i]-vdata[i-1])+(vdata[i+1]-vdata[i])+(vdata[i+2]-vdata[i+1]))/(3*10*vave);		// 		3 day average volume				
 				  }
-			  //
-			    PCAgrad[ccount]=graddata;	// variable used for clustering
-				Avdata[ccount]=vraddata;	// other variable
+			  // for one variable
+			    //PCAgrad[ccount]=graddata;	// variable used for clustering
+				//Avdata[ccount]=vraddata;	// other variable
 			  // for two variables
-				//PCAgrad[ccount2]=graddata;
-				//PCAgrad[ccount2+1]=vraddata;
-				//ccount2=ccount2+2;
+			  	//console.log("length PCAgrad "+PCAgrad.length);
+				PCAgrad[ccount2]=graddata;
+				PCAgrad[ccount2+1]=vraddata;
+				ccount2=ccount2+2;
+				//console.log("ccount2 is "+ccount2);
 				PCAvar[ccount] =ydatan;
-				//console.log(ydatan);
 				PCAname[ccount] = cname;
 				ccount++;	
-
 				//console.log('ccount is : ', ccount, ' pcaname ', cname);
 				document.getElementById("ncoins").innerHTML=ccount;
 			}

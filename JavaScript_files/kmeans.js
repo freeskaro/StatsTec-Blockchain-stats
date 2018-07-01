@@ -42,17 +42,17 @@ function KMeans(opts) {
   this.clusterColors = this.clusterColors();
 
   // Keep track of number of times centroids move.
-  this.iterations = 0;
+  this.iterations = 1; // algorith has been hacked, seeds are generated using Gaussian Mixed Method
 
   // Clear the canvas.
-  this.context.fillStyle = 'rgb(255,255,255)';
-  this.context.fillRect(0, 0, this.width, this.height);
+  //this.context.fillStyle = 'rgb(255,255,255)';
+  //this.context.fillRect(0, 0, this.width, this.height);
 
   // Draw the points onto canvas.
-  this.draw();
+  //this.draw();
 
   // Delay for each draw iteration.
-  this.drawDelay = 20;
+  //this.drawDelay = 20;
 
   // Perform work.
   this.run();
@@ -125,19 +125,55 @@ KMeans.prototype.dataExtentRanges = function() {
 * console.log(means); // [[2,3],[4,5],[5,2]]
 */
 KMeans.prototype.seeds = function() {
-  var means = [];
-  while (this.k--) {
-    var mean = [];
+ // var means = [];
+ // while (this.k--) {
+ //   var mean = [];
 
-    for (var i = 0; i < this.extents.length; i++) {
-      mean[i] = this.extents[i].min + (Math.random() * this.ranges[i]);
-    }
-
-    means.push(mean);
+ //   for (var i = 0; i < this.extents.length; i++) {
+ //     mean[i] = this.extents[i].min + (Math.random() * this.ranges[i]);
+ //   }
+ // this section of code is modified so seeds are determined using Gaussian Mixture Method
+ // this is just a hack using availabe JavaScript libraries.
+ //function WinnerTakeAll(observations, nbclasses, lambda, nbepochs) {
+ // taken from https://github.com/mzaradzki/probabilistic-javascript
+  var lambda = 0.1;
+  //data = data || this.data;
+  var observations = [];
+  observations=this.data;
+  var nbclasses = this.k;
+  var nbepochs=20;
+  //
+  if (observations.length<nbclasses) {
+    throw new Error('Too many classes for so few observations');
   }
-
+  guesses = [];
+  for (var c=0; c<nbclasses; c++) {
+    guesses.push(observations[c]); // TO DO : here we could randomize
+  }
+  for(var i=0; i<nbepochs; i++) {
+    var point = observations[Math.floor(Math.random()*observations.length)];
+    var bestclass;
+    var bestdelta;
+    var bestnorm2 = -1;
+    for (var c=0; c<nbclasses; c++) {
+      var delta = numeric.sub(point, guesses[c]);
+      var norm2 = numeric.norm2Squared(delta);
+      if ((c==0) || (norm2<bestnorm2)) {
+        bestclass = c;
+        bestdelta = delta;
+        bestnorm2 = norm2;
+      }
+    }
+    guesses[bestclass] = numeric.add(guesses[bestclass], numeric.mul(bestdelta, lambda));
+  }
+  var means=guesses;
   return means;
 };
+//    means.push(mean);
+ // }
+//
+//  return means;
+//};
 
 /**
 * assignClusterToDataPoints
