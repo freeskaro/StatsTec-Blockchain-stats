@@ -42,7 +42,7 @@ function KMeans(opts) {
   this.clusterColors = this.clusterColors();
 
   // Keep track of number of times centroids move.
-  this.iterations = 1; // algorith has been hacked, seeds are generated using Gaussian Mixed Method
+  this.iterations = 10; // algorith has been hacked, seeds are generated using Gaussian Mixed Method
 
   // Clear the canvas.
   //this.context.fillStyle = 'rgb(255,255,255)';
@@ -136,37 +136,91 @@ KMeans.prototype.seeds = function() {
  // this is just a hack using availabe JavaScript libraries.
  //function WinnerTakeAll(observations, nbclasses, lambda, nbepochs) {
  // taken from https://github.com/mzaradzki/probabilistic-javascript
-  var lambda = 0.1;
+ // START Gaussian
+ // var lambda = 0.3;
   //data = data || this.data;
-  var observations = [];
-  observations=this.data;
-  var nbclasses = this.k;
-  var nbepochs=20;
+ // var observations = [];
+ // observations=this.data;
+ // var nbclasses = this.k;
+ // var nbepochs=20;
   //
-  if (observations.length<nbclasses) {
-    throw new Error('Too many classes for so few observations');
-  }
-  guesses = [];
-  for (var c=0; c<nbclasses; c++) {
-    guesses.push(observations[c]); // TO DO : here we could randomize
-  }
-  for(var i=0; i<nbepochs; i++) {
-    var point = observations[Math.floor(Math.random()*observations.length)];
-    var bestclass;
-    var bestdelta;
-    var bestnorm2 = -1;
-    for (var c=0; c<nbclasses; c++) {
-      var delta = numeric.sub(point, guesses[c]);
-      var norm2 = numeric.norm2Squared(delta);
-      if ((c==0) || (norm2<bestnorm2)) {
-        bestclass = c;
-        bestdelta = delta;
-        bestnorm2 = norm2;
-      }
-    }
-    guesses[bestclass] = numeric.add(guesses[bestclass], numeric.mul(bestdelta, lambda));
-  }
-  var means=guesses;
+ // if (observations.length<nbclasses) {
+ //   throw new Error('Too many classes for so few observations');
+ // }
+ // guesses = [];
+ // for (var c=0; c<nbclasses; c++) {
+ //   guesses.push(observations[c]); // TO DO : here we could randomize
+ // }
+ // for(var i=0; i<nbepochs; i++) {
+ //   var point = observations[Math.floor(Math.random()*observations.length)];
+ //   var bestclass;
+  //  var bestdelta;
+ //   var bestnorm2 = -1;
+ //   for (var c=0; c<nbclasses; c++) {
+  //    var delta = numeric.sub(point, guesses[c]);
+  //    var norm2 = numeric.norm2Squared(delta);
+  //    if ((c==0) || (norm2<bestnorm2)) {
+  //      bestclass = c;
+  //      bestdelta = delta;
+  //      bestnorm2 = norm2;
+ //     }
+ //   }
+ //   guesses[bestclass] = numeric.add(guesses[bestclass], numeric.mul(bestdelta, lambda));
+ // }
+ // var means=guesses;
+  var X=this.data;
+  var nclus=this.k;
+  var meanX=matrixMean(X,this.extents.length);
+  var dist=[];
+  var distSQ=0;
+  var nvar=this.extents.length
+   //calc dist to mean
+	var nx=X.length;
+	for (var j=0;j<nx;j++){
+		distSQ=0;
+		for (var i=0;i<nvar;i++){
+			if (X[i]!='NAN'){
+			distSQ=distSQ+Math.pow((X[j][i]-meanX[i]),2);
+			}
+		}
+		dist[j]=Math.pow(distSQ,0.5);
+	} 
+	// sort distance find 20%
+	dist=dist.sort();
+	smalln=Math.floor(0.7*nx);
+	var distmin= dist[smalln];
+	// extract outliers n-1 clusters
+	var	distcheck=0;
+	var outpoints = [];
+	var outcount=0
+	for (var j=0;j<nx;j++){
+		distSQ=0;
+		distcheck=0;
+		for (var i=0;i<nvar;i++){
+			if (X[i]!='NAN'){
+			distSQ=distSQ+Math.pow((X[j][i]-meanX[i]),2);
+			}
+		}
+		distcheck=Math.pow(distSQ,0.5);
+			if (distcheck>distmin){
+				outpoints[outcount]=X[j];
+			}	
+	} 
+	// cluster oultiers
+		var kmeans = new KMeansOrig({
+		  canvas: document.getElementById('canvas2'),
+		  data: outpoints,
+		  k: nclus-1
+		});
+	// load seed means
+		var rmeans=[];
+		for (var i=0;i<nclus;i++){
+				if (i==0){rmeans[i]=meanX};
+				if (i>0){rmeans[i]=kmeans.means[i-1];}
+		}								
+ //
+  means=rmeans;
+  //console.log(means);
   return means;
 };
 //    means.push(mean);
