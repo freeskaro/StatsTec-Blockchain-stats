@@ -11,7 +11,7 @@ function GetFormattedDateAPI(date) {
     var year = (todayTime.getFullYear());
 	if (month < 10) month = '0' + month;
     if (day < 10) day = '0' + day;
-    return [year,month,day].join("");
+    return [year,month,day].join("-");
 }
 //
 function GetFormattedDate(date) {
@@ -44,7 +44,7 @@ function PCAGo() {
 	  var name = k;
 	  var pvar = PCAresults.PPE[k]*100;
 	  //
-	  var xdata=[];
+	  var xdata =[];
 	  var ydata=[];
 	  var ddata=[];
 		//
@@ -75,6 +75,7 @@ function ClusterGo() {
 	var xdates=PCAxdata;
 		// plot scores
 	var rtrace=[];
+	var rtrace2=[];
 	var nl= PCAresults.m;
 	//console.log(nl);
  // data for clustering
@@ -82,13 +83,16 @@ function ClusterGo() {
 	var kcount=0;
 	for (var i=0;i<ne;i=i+2) {//i=i+2 for two variables; i=i+1 for one variables
 		// TWO variables: var row=
-		 var row=[PCAresults.E[0][i],PCAresults.E[0][i+1],PCAresults.E[1][i],PCAresults.E[1][i+1],PCAresults.E[2][i],PCAresults.E[2][i+1],PCAresults.E[3][i],PCAresults.E[3][i+1]];
+		 var row=[PCAresults.E[1][i],PCAresults.E[1][i+1],PCAresults.E[2][i],PCAresults.E[2][i+1],PCAresults.E[3][i],PCAresults.E[3][i+1],PCAresults.E[4][i],PCAresults.E[4][i+1],PCAresults.E[5][i],PCAresults.E[5][i+1],PCAresults.E[6][i],PCAresults.E[6][i+1]];
 		 data[kcount]=row;
 		//data[kcount]=[PCAresults.E[0][i],PCAresults.E[1][i],PCAresults.E[2][i],PCAresults.E[3][i],PCAresults.E[4][i]];
 		kcount++;
 	}
+	for (var i=0;i<7;i++) {
+	console.log(PCAresults.PPE[i]*100+'%');
+	}	
 	//
-	var nclus=4;
+	var nclus=5;
 	var kmeans = new KMeans({
 		  canvas: document.getElementById('canvas'),
 		  data: data,
@@ -131,13 +135,16 @@ function ClusterGo() {
 	//
 	//clear previous;
 	if (PCAgraph2.firstChild){
-	for (var jj=0;jj<noTraces;	jj++) {rtrace[jj]=jj;}
+		for (var jj=0;jj<(nclus);	jj++) {rtrace[jj]=jj;}
 		firstgraph = document.getElementById('PCAgraph2');
 		Plotly.deleteTraces(firstgraph,rtrace);
 		firstgraph = document.getElementById('PCAgraph2bar');
 		Plotly.deleteTraces(firstgraph,rtrace);
+	}
+	if (PCAgraph3.firstChild){	
+		for (var jj=0;jj<(4);	jj++) {rtrace2[jj]=jj;}
 		firstgraph = document.getElementById('PCAgraph3');
-		Plotly.deleteTraces(firstgraph,rtrace);
+		Plotly.deleteTraces(firstgraph,rtrace2);
 		assignments.removeChild(assignments.firstChild);
 		Scores.removeChild(Scores.firstChild);
 	}
@@ -151,7 +158,7 @@ function ClusterGo() {
 	  var ddata=[];
 	//
 	  for (var i=0;i<nl;i++) {
-		xdata[i]=xdates[i];
+		xdata[i]=xdates[i+3];
 		ydata[i]=clusresults[k][i];
 	  }
 	  //console.log('yave ', yave);
@@ -159,7 +166,7 @@ function ClusterGo() {
 		PCAgraph = document.getElementById('PCAgraph2');
 		var trace = {x: xdata,   y: ydata,   mode: 'lines',  name: ("cluster "+(k+1)+' ('+ccount[k]+')')};
 		ddata=[trace];
-		var llayout = {title:'Time vs. Cluster 3-day avg. Price Change', plot_bgcolor: '#DCDCDC' ,legend: {"orientation": "h",xanchor:'center',x:0.5,y:-0.2},xaxis: {title: 'Date'}, yaxis: {title: 'Daily Change price/mean'}};
+		var llayout = {title:'Time vs. Cluster 2-day avg. Price Change', plot_bgcolor: '#DCDCDC' ,legend: {"orientation": "h",xanchor:'center',x:0.5,y:-0.2},xaxis: {title: 'Date'}, yaxis: {title: 'Daily Change price/mean'}};
 		//console.log("plotting ", name);
 		Plotly.plot(PCAgraph, ddata, llayout);
 	};
@@ -171,7 +178,7 @@ function ClusterGo() {
 	  var ddata=[];
 	//
 	  for (var i=0;i<nl;i++) {
-		xdata[i]=xdates[i];
+		xdata[i]=xdates[i+3];
 		ydata[i]=vclusresults[k][i];
 	  }
 	  //console.log('yave ', yave);
@@ -179,12 +186,13 @@ function ClusterGo() {
 		PCAgraph = document.getElementById('PCAgraph2bar');
 		var trace = {x: xdata, y: ydata, type: 'bar', name: ("cluster "+(k+1)+' ('+ccount[k]+')'), line: {shape: 'hv'}, type: 'scatter'};
 		ddata=[trace];
-		var llayout = {title:'Time vs. Cluster 3-day avg. Volume change', plot_bgcolor: '#DCDCDC' ,legend: {"orientation": "h",xanchor:'center',x:0.5,y:-0.2},xaxis: {title: 'Date'}, yaxis: {title: '0.1 x Daily Change volume / mean'}};
+		var llayout = {title:'Time vs. Cluster 2-day avg. Volume', plot_bgcolor: '#DCDCDC' ,legend: {"orientation": "h",xanchor:'center',x:0.5,y:-0.2},xaxis: {title: 'Date'}, yaxis: {title: '0.1 x Daily volume / mean'}};
 		//console.log("plotting ", name);
 		Plotly.plot(PCAgraph, ddata, llayout);
 	};	
 		////plot scores
-	for (var k=0; k<4;k++){
+		neig=5;
+	for (var k=0; k<neig;k++){
 	  var name = k;
 	  var pvar = PCAresults.PPE[k]*100;
 	  //
@@ -193,7 +201,7 @@ function ClusterGo() {
 	  var ddata=[];
 		//
 	  for (var i=0;i<nl;i++) {
-		xdata[i]=xdates[i];
+		xdata[i]=xdates[i+2];
 		ydata[i]=PCAresults.A[i][k];
 		//adata.push(A[i][k]);
 	  }
@@ -207,8 +215,8 @@ function ClusterGo() {
 		Plotly.plot(PCAgraph, ddata, llayout);
 	};	
 	//
-	formWriteEig2(PCAname,PCAresults.E,kmeans.assignments,4,"assignments");
-	formWriteScore(PCAresults.A,4,"Scores");
+	formWriteEig2(PCAname,PCAresults.E,kmeans.assignments,neig,"assignments");
+	formWriteScore(PCAresults.A,neig,"Scores");
 }
 //
  function tpdata(time, price) {
@@ -220,7 +228,7 @@ function readCheckBox() {
 	var nameseta =[];
   // Get the checkbox
 	var count=0;
-	for (i=0; i<50; i++){
+	for (i=0; i<25; i++){
 	  var checkBox = document.getElementById("coin"+i);
 	  // If the checkbox is checked, display the output text
 	  if (checkBox.checked == true){
@@ -329,6 +337,22 @@ function arraySum(X){
 		return sum;	
 }
 	//
+	function matrixMean(X,nvar){
+		var sumj=0;
+		var sum=[];
+		var n=X.length;
+		for (var j=0;j<nvar;j++){
+			sumj=0;
+			for (var i=0;i<n;i++){
+				if (X[i]!='NAN'){
+				sumj=sumj+X[i][j];
+				}
+			}
+			sum[j]=sumj/n;
+		}
+		return sum;	
+}
+//
 function varExplain (PPE){
 		var PTV=[];
 		var amountVar=0;
@@ -413,18 +437,12 @@ function formWriteEig2 (labels,E,ass,k,id){
 	var td = document.createElement('td');
 	td.appendChild(document.createTextNode('Coin'));
 	tr.appendChild(td);
-	var td = document.createElement('td');
-	td.appendChild(document.createTextNode('Vector 1'));
-	tr.appendChild(td);
-	var td = document.createElement('td');
-	td.appendChild(document.createTextNode('Vector 2'));
-	tr.appendChild(td);
-	var td = document.createElement('td');
-	td.appendChild(document.createTextNode('Vector 3'));
-	tr.appendChild(td);
-	var td = document.createElement('td');
-	td.appendChild(document.createTextNode('Vector 4'));
-	tr.appendChild(td);
+	for (var nv=0; nv<k; nv++) {
+		var td = document.createElement('td');
+		//console.log('Vector ',nv);
+		td.appendChild(document.createTextNode('Vector '+(nv+1)));
+		tr.appendChild(td);
+	}
 	var td = document.createElement('td');
 	td.appendChild(document.createTextNode('Cluster'));
 	tr.appendChild(td);
@@ -538,50 +556,11 @@ function formWriteScore (E,k){
 	var td = document.createElement('td');
 	td.appendChild(document.createTextNode('day'));
 	tr.appendChild(td);
-	var td = document.createElement('td');
-	td.appendChild(document.createTextNode('Score 1'));
-	tr.appendChild(td);
-	var td = document.createElement('td');
-	td.appendChild(document.createTextNode('Score 2'));
-	tr.appendChild(td);
-	var td = document.createElement('td');
-	td.appendChild(document.createTextNode('Score 3'));
-	tr.appendChild(td);
-	var td = document.createElement('td');
-	td.appendChild(document.createTextNode('Score 4'));
-	tr.appendChild(td);
-	/*var td = document.createElement('td');
-	td.appendChild(document.createTextNode('Score 5'));
-	tr.appendChild(td);
-	var td = document.createElement('td');
-	td.appendChild(document.createTextNode('Score 6'));
-	tr.appendChild(td);
-	var td = document.createElement('td');
-	td.appendChild(document.createTextNode('Score 7'));
-	tr.appendChild(td);
-	var td = document.createElement('td');
-	td.appendChild(document.createTextNode('Score 8'));
-	tr.appendChild(td);
-	var td = document.createElement('td');
-	td.appendChild(document.createTextNode('Score 9'));
+	for (var nv=0; nv<k; nv++) {
 		var td = document.createElement('td');
-	td.appendChild(document.createTextNode('Score 10'));
-	tr.appendChild(td);
-	var td = document.createElement('td');
-	td.appendChild(document.createTextNode('Score 11'));
-	tr.appendChild(td);
-	var td = document.createElement('td');
-	td.appendChild(document.createTextNode('Score 12'));
-	tr.appendChild(td);
-	var td = document.createElement('td');
-	td.appendChild(document.createTextNode('Score 13'));
-	tr.appendChild(td);
-	var td = document.createElement('td');
-	td.appendChild(document.createTextNode('Score 14'));
-	tr.appendChild(td);
-	var td = document.createElement('td');
-	td.appendChild(document.createTextNode('Score 15'));
-	tr.appendChild(td);*/
+		td.appendChild(document.createTextNode('Score '+(nv+1)));
+		tr.appendChild(td);
+	}
 	// write out results,
 	for (var i=0; i<E.length; i++) {
 		var textOutLabel = i;
@@ -625,25 +604,22 @@ function graphIt() {
 	//
 	for (var k=0; k<nameseta.length;k++){
 		var name = nameseta[k];
-		$.getJSON('http://www.allorigins.me/get?url=' + encodeURIComponent("https://coinmarketcap.com/currencies/"+name+"/historical-data/?start="+sdate+"&end="+ddate) + '&callback=?', function(response) {
-		//
-		var cname=$(response.contents).find('#historical-data');
-		cname=cname[0].innerText.substring(22,30);
-		//cname=cname.substring[21,30];
-		//console.log(cname);
+		$.getJSON('https://api.allorigins.win/get?url=' + encodeURIComponent("https://api.coinpaprika.com/v1/coins/"+name+"/ohlcv/historical?start="+sdate+"&end="+ddate) + '&callback=?',(function () { // added closure...
+		  var cname = name; 
+		  return function(response) {
 		var xdata=[];
 		var ydata=[];
 		var vdata=[];
 		var ydatan=[];
 		var vdatan=[];
 		var data=[];
-		var pricedata =$(response.contents).find('tbody tr');
+		var pricedata =JSON.parse(response.contents);
 		var nl= pricedata.length;
 		for (var i=0;i<pricedata.length;i++) {
-			j=nl-i-1;
-			xdata[i]=new Date(pricedata[j].children[0].innerText);
-			ydata[i]=Number(pricedata[j].children[4].innerText);
-			vdata[i]=Number(pricedata[j].children[5].innerText.replace(/,/g, ''));	
+			j=i;
+			xdata[i]=new Date(pricedata[j].time_close);
+			ydata[i]=Number(pricedata[j].close);
+			vdata[i]=Number(pricedata[j].volume);	
 		  }
 		 var yave=ydata.sum()/ydata.length;
 		 var vave=vdata.sum()/vdata.length;
@@ -661,7 +637,8 @@ function graphIt() {
 		Plotly.plot(firstgraph, data, layout,);*/
 		plotGrapgh('firstgraph',xdata,ydatan,cname,yave);
 		plotGrapghBar('firstgraphbar',xdata,vdatan,cname,vave); 
-	});
+		};
+		})()); // () force immidiate execution
 	};
 } // end of graphIt
 //
@@ -678,17 +655,19 @@ function loadCheckBox(){
 	*/
 	var ccount=0;
 	var ccount2=0;
- 	$.getJSON('http://www.whateverorigin.org/get?url=' + encodeURIComponent("https://api.coinmarketcap.com/v1/ticker/?limit=50") + '&callback=?', function(data,status){
-	if (status != "success"){alert("We are sorry. External data is not available");} 
-	coinsNo=data.contents.length;
+ 	$.getJSON('https://api.allorigins.win/get?url=' + encodeURIComponent("https://api.coinpaprika.com/v1/coins") + '&callback=?',function(data) {
+	//if (status != "success"){alert("We are sorry. External data is not available");} 
+	coinsNo=30;//data.contents.length;
+	startcoin=0;
 	//
+	data=JSON.parse(data.contents)
 	for (var i=0; i < coinsNo; i++) {
-		coinlist[i]=data.contents[i].id;
-		//console.log(data.contents[i].id);
+		coinlist[i]=data[i+startcoin].id;
+		//console.log(data[i].id);
 	};
 	//add freicoin
-	coinlist[coinsNo-1]="freicoin";
-	coinsNo=coinlist.length;
+	//coinlist[coinsNo-1]="freicoin";
+	//coinsNo=coinlist.length;
 	//creat HTML check box
 	var form = document.getElementById("coinCheckList");
 	for (var j=0; j<coinsNo; j++){
@@ -714,13 +693,13 @@ function loadCheckBox(){
 		form.appendChild(labelbox);
 		///
 		// get data for PCA analysis of 100 		
-		var pcaname = coinlist[j];
+		var pcaname = data[j+startcoin].id;
+		var tname = data[j+startcoin].symbol;
 		var commonlength;
-		$.getJSON('http://www.allorigins.me/get?url=' + encodeURIComponent("https://coinmarketcap.com/currencies/"+pcaname+"/historical-data/?start="+sdate+"&end="+ddate) + '&callback=?', function(response) {
-			//
-			var cname=$(response.contents).find('#historical-data');
-			//console.log(cname);
-			cname=cname[0].innerText.substring(22,30);
+		$.getJSON('https://api.allorigins.win/get?url=' + encodeURIComponent("https://api.coinpaprika.com/v1/coins/"+pcaname+"/ohlcv/historical?start="+sdate+"&end="+ddate) + '&callback=?',(function () { // added closure...
+		  var cname = tname; 
+		  return function(response) {
+		//
 			//
 			var ydata=[];
 			var vdata=[];
@@ -729,7 +708,7 @@ function loadCheckBox(){
 			var vdatan=[];			
 			var graddata=[];
 			var vraddata=[];
-			var pricedata =$(response.contents).find('tbody tr');
+			var pricedata =JSON.parse(response.contents);
 			// get common length for data from first coin
 			if (ccount==0){
 				commonlength=pricedata.length;
@@ -740,10 +719,11 @@ function loadCheckBox(){
 			//console.log('ccount is : ', ccount, ' nl ', nl,' commonlength ', commonlength);
 			if (nl==commonlength){
 				  for (var i=0;i<pricedata.length;i++) {
-				  var jj=nl-i-1;	
-					PCAxdata[i]=new Date(pricedata[jj].children[0].innerText);				  
-					ydata[i]=Number(pricedata[jj].children[4].innerText);
-					vdata[i]=Number(pricedata[jj].children[5].innerText.replace(/,/g, ''));	
+				  var jj=i;	
+					PCAxdata[i]=new Date(pricedata[jj].time_close);				  
+					ydata[i]=Number(pricedata[jj].close);
+					vdata[i]=Number(pricedata[jj].volume);	
+					//console.log('ydata ', ydata[i], ' vdata ', vdata[i]);
 				  }
 				  var yave=ydata.sum()/ydata.length;
 				  var vave=vdata.sum()/vdata.length;
@@ -752,12 +732,14 @@ function loadCheckBox(){
 					ydatan[i]=ydata[i]/yave;
 					vdatan[i]=vdata[i]/vave;						
 				  }
-				  for (var i=1;i<pricedata.length-2;i++) {
+				  for (var i=2;i<pricedata.length-2;i++) {
 					 //adjusted value for derivative 2018-03-22 ydatan[i]=(ydata[i+1]-ydata[i])/yave 
 					//ydatan[i]=(ydata[i+1]-ydata[i])/yave;
 					//ydatan[i-2]=((ydata[i-1]-ydata[i-2])+(ydata[i]-ydata[i-1])+(ydata[i+1]-ydata[i])+(ydata[i+2]-ydata[i+1]))/(4*yave);
-					graddata[i-1]=((ydata[i]-ydata[i-1])+(ydata[i+1]-ydata[i])+(ydata[i+2]-ydata[i+1]))/(3*yave); // 3 day average price change
-					vraddata[i-1]=((vdata[i]-vdata[i-1])+(vdata[i+1]-vdata[i])+(vdata[i+2]-vdata[i+1]))/(3*10*vave);		// 		3 day average volume				
+					PCAgradx[i-2]=new Date(pricedata[jj].time_close);
+					graddata[i-2]=((ydata[i]-ydata[i-1])+(ydata[i-1]-ydata[i-2]))/(2*yave); // 3 day average price change
+					vraddata[i-2]=((vdata[i]+vdata[i-1]))/(2*10*vave); // 		3 day average volume	
+					//vraddata[i-1]=((vdata[i]-vdata[i-1])+(vdata[i+1]-vdata[i])+(vdata[i+2]-vdata[i+1]))/(3*10*vave);		// 		3 day average volume	change			
 				  }
 			  // for one variable
 			    //PCAgrad[ccount]=graddata;	// variable used for clustering
@@ -774,7 +756,8 @@ function loadCheckBox(){
 				//console.log('ccount is : ', ccount, ' pcaname ', cname);
 				document.getElementById("ncoins").innerHTML=ccount;
 			}
-		});
+		};
+		})()); // () force immidiate execution
 		//		
 	};
 	});
@@ -806,34 +789,35 @@ function plotGrapghBar(graphId,xdata,vdata,cname,yave){
 }
 	//
 function loadOpeningGraph(){
-	var nameset=["Bitcoin","Ethereum","Steem","Freicoin"];
+	var nameset=["btc-bitcoin","eth-ethereum","bnb-binance-coin","frc-freicoin"];
+	var tickerset=["BTC","ETH","BNB","FRC"];
 	///
 	noTraces=nameset.length;
 	//var ccount=0;
 	for (var k=0; k<nameset.length;k++){
 	var name = nameset[k];
-	$.getJSON('http://www.allorigins.me/get?url=' + encodeURIComponent("https://coinmarketcap.com/currencies/"+name+"/historical-data/?start="+sdate+"&end="+ddate) + '&callback=?', function(response,status) {
-	  //
-	  if (status != "success"){alert("We are sorry. External data is not available");} 
-	  var cname=$(response.contents).find('#historical-data');
+	var tname = tickerset[k];
+	//https://api.coinpaprika.com/v1/coins/btc-bitcoin/ohlcv/historical?start=2019-01-01&end=2019-01-20
+	$.getJSON('https://api.allorigins.win/get?url=' + encodeURIComponent("https://api.coinpaprika.com/v1/coins/"+name+"/ohlcv/historical?start="+sdate+"&end="+ddate) + '&callback=?',(function () { // added closure...
+      var cname = tname; 
+      return function(response) {
 	  //console.log(response.contents);
-	  cname=cname[0].innerText.substring(22,30);
-	  //cname=cname.substring[21,30];
-	  //console.log(cname);
 	  var xdata=[];
 	  var ydata=[];
 	  var vdata=[];
 	  var ydatan=[];
 	  var vdatan=[];
 	  var data=[];
-	  var pricedata =$(response.contents).find('tbody tr ');
+	  var pricedata =JSON.parse(response.contents);
+	  //var pricedata =$(pricedata1.contents).find('tbody tr ');
+		//console.log('pricedata ', pricedata);
 	  var nl= pricedata.length;
 	  for (var i=0;i<pricedata.length;i++) {
-	  j=nl-i-1;
-		xdata[i]=new Date(pricedata[j].children[0].innerText);
-		ydata[i]=Number(pricedata[j].children[4].innerText);
-		vdata[i]=Number(pricedata[j].children[5].innerText.replace(/,/g, ''));
-	  //console.log('cname ', phigh, plow, ydata[i], vdata[i]);		
+	  j=i;
+		xdata[i]=new Date(pricedata[j].time_close);	
+		ydata[i]=Number(pricedata[j].close);
+		vdata[i]=Number(pricedata[j].volume);
+	  //console.log('cname ', ydata[i], vdata[i]);		
 	  }
 	  var yave=ydata.sum()/ydata.length;
 	  var vave=vdata.sum()/vdata.length;
@@ -844,6 +828,7 @@ function loadOpeningGraph(){
 	//
 	plotGrapgh('firstgraph',xdata,ydatan,cname,yave);   
 	plotGrapghBar('firstgraphbar',xdata,vdatan,cname,vave); 
-	});
+	};
+	})()); // () force immidiate execution
 	};
 }
